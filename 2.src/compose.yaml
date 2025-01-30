@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  php:
+    image: php:8.3-apache
+    container_name: php_app
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src/html:/var/www/html/html # HTMLファイル用
+      - ./src/js:/var/www/html/html/js # JavaScript用
+      - ./src/api:/var/www/html/api # API用
+      - ./apache-config.conf:/etc/apache2/sites-enabled/000-default.conf
+    environment:
+      APACHE_DOCUMENT_ROOT: /var/www/html/html
+    restart: always
+    depends_on:
+      - mysql # MySQLサービスへの依存を指定
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root12
+      MYSQL_DATABASE: muscle
+      MYSQL_USER: user1
+      MYSQL_PASSWORD: user12
+    volumes:
+      - mysql_data:/var/lib/mysql # データ永続化用
+    restart: always
+
+volumes:
+  mysql_data:
